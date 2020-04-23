@@ -25,7 +25,7 @@ module.exports = {
     }
 
     if(req.files.length == 0) 
-      return res.send('Por favor, envie pelo menos uma imagem');
+      return res.send('Por favor, envie pelo menos uma imagem.');
 
     let results = await Product.create(req.body);
     const productId = results.rows[0].id;
@@ -55,7 +55,13 @@ module.exports = {
     product.oldPrice = formatPrice(product.old_price);
     product.price = formatPrice(product.price);
 
-    return res.render('products/show.njk', { product })
+    results = await Product.files(product.id);
+    const files = results.rows.map(file => ({
+      ...file,
+      src: `${req.protocol}://${req.headers.host}${file.path.replace('public', '')}`
+    }))
+
+    return res.render('products/show.njk', { product, files })
   },
 
   async edit(req, res) {
@@ -101,7 +107,6 @@ module.exports = {
       removedFiles.splice(lastIndex, 1);
       
       const removedFilesPromise = removedFiles.map(id => File.delete(id));
-      
       await Promise.all(removedFilesPromise);
     }
     

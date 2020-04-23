@@ -1,6 +1,13 @@
 const db = require('../../config/db');
 
 module.exports = {
+  all() {
+    return db.query(`
+      SELECT * FROM products
+      ORDER BY updated_at DESC
+    `);
+  },
+
   create(data) {
     const query = `
       INSERT INTO products (
@@ -73,5 +80,40 @@ module.exports = {
     return db.query(`
       SELECT * FROM files WHERE product_id = $1
     `, [id]);
+  },
+
+  search(params) {
+    try {
+      const { filter, category } = params;
+
+      let query = '',
+        filterQuery = `WHERE`
+
+      if (category) {
+        filterQuery = `${filterQuery}
+          products.category_id = ${category_id}
+          AND
+        `;
+      }
+
+      filterQuery = `
+        ${filterQuery}
+        products.name ilike '%${filter}%'
+        OR product.description ilike '%${filter}%'
+      `;
+
+      query = `
+        SELECT products.*,
+          categories.name AS category_name
+        FROM products
+        LEFT JOIN categories ON (categories.id = products.category_id)
+        ${filterQuery}
+        GROUP BY categories.name
+      `;
+
+      return db.query(query);
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 }

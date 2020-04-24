@@ -32,7 +32,7 @@ module.exports = {
 
       return res.render('home/index.njk', { products: lastAdded });
     } catch (err) {
-      throw new Error(err);
+      console.error('HomeController index', err);
     }
   }
 };

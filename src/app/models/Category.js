@@ -2,8 +2,12 @@ const db = require('../../config/db');
 
 module.exports = {
   all() {
-    return db.query(`
-      SELECT * FROM categories
-    `);
+    try {
+      return db.query(`
+        SELECT * FROM categories
+      `);
+    } catch (err) {
+      console.error('Category all', err);
+    }
   }
 }

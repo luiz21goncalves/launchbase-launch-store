@@ -2,84 +2,108 @@ const db = require('../../config/db');
 
 module.exports = {
   all() {
-    return db.query(`
+    try {
+      return db.query(`
       SELECT * FROM products
       ORDER BY updated_at DESC
     `);
+    } catch (err) {
+      console.error('Product all', err);
+    }
   },
 
   create(data) {
-    const query = `
-      INSERT INTO products (
-        category_id,
-        user_id,
-        name,
-        description,
-        old_price,
-        price,
-        quantity,
-        status
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING id
-    `;
+    try {
+      const query = `
+        INSERT INTO products (
+          category_id,
+          user_id,
+          name,
+          description,
+          old_price,
+          price,
+          quantity,
+          status
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id
+      `;
 
-    data.price = data.price.replace(/\D/g,"");
+      data.price = data.price.replace(/\D/g,"");
 
-    const values = [
-      data.category_id,
-      data.user_id || 1,
-      data.name,
-      data.description,
-      data.old_price || data.price,
-      data.price,
-      data.quantity,
-      data.status || 1,
-    ]
+      const values = [
+        data.category_id,
+        data.user_id || 1,
+        data.name,
+        data.description,
+        data.old_price || data.price,
+        data.price,
+        data.quantity,
+        data.status || 1,
+      ];
 
-    return db.query(query, values)
+      return db.query(query, values);
+    } catch(err) {
+      console.error('Product create',err);
+    }
   },
 
   find(id) {
-    return db.query(`SELECT * FROM products WHERE id = $1`, [id])
+    try {
+      return db.query(`SELECT * FROM products WHERE id = $1`, [id])
+    } catch (err) {
+      console.error('Product find',err)
+    }
   },
 
   update(data) {
-    const query = `
-      UPDATE products SET
-        category_id=($1),
-        user_id=($2),
-        name=($3),
-        description=($4),
-        old_price=($5),
-        price=($6),
-        quantity=($7),
-        status=($8)
-      WHERE id = $9
-    `
+    try {
+      const query = `
+        UPDATE products SET
+          category_id=($1),
+          user_id=($2),
+          name=($3),
+          description=($4),
+          old_price=($5),
+          price=($6),
+          quantity=($7),
+          status=($8)
+        WHERE id = $9
+      `;
 
-    const values = [
-      data.category_id,
-      data.user_id || 1,
-      data.name,
-      data.description,
-      data.old_price,
-      data.price,
-      data.quantity,
-      data.status,
-      data.id,
-    ]
+      const values = [
+        data.category_id,
+        data.user_id || 1,
+        data.name,
+        data.description,
+        data.old_price,
+        data.price,
+        data.quantity,
+        data.status,
+        data.id,
+      ];
 
-    return db.query(query, values)
+      return db.query(query, values);
+    } catch (err) {
+      console.error('Products update', err);
+    }
   },
 
   delete(id) {
-    return db.query('DELETE FROM products WHERE id = $1', [id])
+    try {
+      return db.query('DELETE FROM products WHERE id = $1', [id])
+    } catch (err) {
+      console.error('Product delete', err);
+    }
   },
 
   files(id) {
-    return db.query(`
-      SELECT * FROM files WHERE product_id = $1
-    `, [id]);
+    try {
+      return db.query(`
+        SELECT * FROM files WHERE product_id = $1
+      `, [id]);
+    } catch (err) {
+      console.error('Products files', err);
+    }
   },
 
   search(params) {
@@ -87,11 +111,11 @@ module.exports = {
       const { filter, category } = params;
 
       let query = '',
-        filterQuery = `WHERE`
+        filterQuery = `WHERE`;
 
       if (category) {
         filterQuery = `${filterQuery}
-          products.category_id = ${category_id}
+          products.category_id = ${category}
           AND
         `;
       }
@@ -99,7 +123,7 @@ module.exports = {
       filterQuery = `
         ${filterQuery}
         products.name ilike '%${filter}%'
-        OR product.description ilike '%${filter}%'
+        OR products.description ilike '%${filter}%'
       `;
 
       query = `
@@ -108,12 +132,12 @@ module.exports = {
         FROM products
         LEFT JOIN categories ON (categories.id = products.category_id)
         ${filterQuery}
-        GROUP BY categories.name
+        GROUP BY products.id, categories.name
       `;
 
       return db.query(query);
     } catch (err) {
-      throw new Error(err);
+      console.error( 'Products search', err);
     }
   }
 }

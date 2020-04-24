@@ -3,22 +3,26 @@ const fs = require('fs');
 
 module.exports = {
   create({ filename, path, product_id }) {
-    const query = `
-      INSERT INTO files (
-        name,
+    try {
+      const query = `
+        INSERT INTO files (
+          name,
+          path,
+          product_id
+        ) VALUES ($1, $2, $3)
+        RETURNING id
+      `;
+
+      const values = [
+        filename,
         path,
-        product_id
-      ) VALUES ($1, $2, $3)
-      RETURNING id
-    `;
+        product_id,
+      ]
 
-    const values = [
-      filename,
-      path,
-      product_id,
-    ]
-
-    return db.query(query, values)
+      return db.query(query, values)
+    } catch (err) {
+      console.error('File create', err);
+    }
   },
   async delete(id) {
     try {
@@ -31,7 +35,7 @@ module.exports = {
         DELETE FROM files WHERE id = $1
       `, [id]);
     } catch {
-      throw new Error(err);
+      console.error('File delete', err);
     }
   }
 }

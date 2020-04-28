@@ -32,6 +32,10 @@ CREATE TABLE "categories" (
   "name" text NOT NULL
 );
 
+INSERT INTO categories(name) VALUES('comida');
+INSERT INTO categories(name) VALUES('eletrônicos');
+INSERT INTO categories(name) VALUES('automóveis');
+
 CREATE TABLE "files" (
   "id" SERIAL PRIMARY KEY,
   "name" text,
@@ -46,19 +50,19 @@ ALTER TABLE "files" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
 ALTER TABLE "products" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 CREATE FUNCTION trigger_set_timestamp()
-RETURN TRIGGER AS $$
+RETURNS TRIGGER AS $$
 BEGIN
-  NEW.updated.at = NOW();
+  NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgslq;
+$$ LANGUAGE plpgsql;
 
-CREATE TRIGGER set_timestamp()
+CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON products
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
-CREATE TRIGGER set_timestamp()
+CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();

@@ -1,7 +1,7 @@
 <div class="item">
   <div>Categoria</div>
   
-  <div>
+  <div class="input">
     <select name="category_id">
       {% for category in categories %}
         <option 
@@ -18,7 +18,7 @@
 <div class="item">
   <div>Título</div>
 
-  <div>
+  <div class="input">
     <input 
     type="text" 
     name="name"
@@ -31,7 +31,7 @@
 <div class="item">
   <div>Descrição</div>
 
-  <div>
+  <div class="input">
     <textarea name="description">{{product.description}}</textarea>
   </div>
 </div>
@@ -75,7 +75,7 @@
 <div class="item">
   <div>Valor</div>
 
-  <div>
+  <div class="input">
     <input 
     type="text" 
     name="price"
@@ -97,7 +97,7 @@
 <div class="item">
   <div>Quantidade</div>
 
-  <div>
+  <div class="input">
     <input 
     type="number" 
     name="quantity"
@@ -111,7 +111,7 @@
   <div class="item">
     <div>Disponível ?</div>
 
-    <div>
+    <div class="input" >
       <span>
         <input 
           type="radio" 

@@ -13,8 +13,8 @@ const UserController = require('../app/controllers/UserController');
 // routes.post('/forgot-password', SessionController.forgot);
 // routes.post('/password-reset', SessionController.reset);
 
-// routes.get('/register', SessionControler.registerForm);
-// routes.post('/register', SessionControler.register);
+routes.get('/register', UserController.registerForm);
+// routes.post('/register', UserController.register);
 
 // routes.get('/', UserController.show);
 // routes.put('/', UserController.put);

@@ -222,4 +222,34 @@ const Validate = {
       value
     }
   },
+
+  isCpfCnpj(value) {
+    let error = null;
+
+    const cleanValues = value.replace(/\D/g, '');
+
+    if (cleanValues.length > 11 && cleanValues !== 14) {
+      error = 'CNPJ incorreto'
+    } else if (cleanValues.length < 12 && cleanValues !== 11) {
+      error = 'CPF incorreto'
+    }
+
+    return {
+      error,
+      value
+    }
+  },
+
+  isCep(value) {
+    let error = null;
+
+    const CleanValues = value.replace(/\D/g, '');
+
+    if (cleanValues.length !== 8) error = 'CEP incorreto';
+
+    return {
+      error,
+      valeus
+    }
+  },
 };

@@ -6,8 +6,8 @@ module.exports = {
   },
 
   async register(req, res) {
-    
-
-    return res.send('cadastrado com sucesso!')
+    return res.render('user/register.njk', {
+      error: "Usuário cadastrado com sucesso!"
+    })
   },
 };

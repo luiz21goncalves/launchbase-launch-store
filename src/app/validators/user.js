@@ -1,11 +1,13 @@
 const User = require('../models/User');
 
-async function post(req, req, next) {  
+async function post(req, res, next) {  
   const keys = Object.keys(req.body);
   
   for (key of keys) {
     if (req.body[key] == '')
-    return res.send('Por favor, preencha todos os campos!');
+    return res.render('user/register.njk',{
+      error: 'Por favor, preencha todos os campos!'
+    });
   }
   
   let { email, cpf_cnpj, password, passwordRepeat } = req.body;
@@ -17,9 +19,15 @@ async function post(req, req, next) {
     or: { cpf_cnpj }
   });
   
-  if (user) return res.send('Usuário já existente!')
+  if (user) return res.render('user/register.njk', {
+    user: req.body,
+    error: 'Usuário já existente!'
+  });
   
-  if (password != passwordRepeat) res.send('Senhas não conferem!')
+  if (password != passwordRepeat) return res.render('user/register.njk',{
+    user: req.body,
+    error :'Senhas não conferem!'
+  });
 
   next();
 };

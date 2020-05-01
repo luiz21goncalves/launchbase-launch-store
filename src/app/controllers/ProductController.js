@@ -22,12 +22,16 @@ module.exports = {
 
       for (key of keys) {
         if (req.body[key] == '') {
-          return res.send('Por favor, preencha todos os campos.');
+          return res.render('products/create.njk', {
+            error: 'Por favor, preencha todos os campos.'
+          });
         }
       }
 
       if(req.files.length == 0) 
-        return res.send('Por favor, envie pelo menos uma imagem.');
+        return res.render('products/create.njk', {
+          error: 'Por favor, envie pelo menos uma imagem.'
+        });
 
       let results = await Product.create(req.body);
       const productId = results.rows[0].id;
@@ -49,7 +53,9 @@ module.exports = {
       let results = await Product.find(req.params.id);
       const product = results.rows[0];
   
-      if(!product) return res.send('Produto não encontrado.')
+      if(!product) return res.render('home/index.njk', {
+        error: 'Produto não encontrado.'
+      });
   
       const { day, hour, minutes, month } = date(product.updated_at);
   
@@ -78,7 +84,9 @@ module.exports = {
       let results = await Product.find(req.params.id);
       const product = results.rows[0];
   
-      if(!product) return res.send('Produto não encontrado.');
+      if(!product) return res.render('home/index.njk', {
+        error: 'Produto não encontrado.'
+      });
   
       product.price = formatPrice(product.price);
       product.old_price = formatPrice(product.old_price);
@@ -105,7 +113,9 @@ module.exports = {
 
       for (key of keys) {
         if (req.body[key] == '' && key != 'removed_files') {
-          return res.send('Por favor, preencha todos os campos.');
+          return res.render('products/edit', {
+            error: 'Por favor, preencha todos os campos.'
+          });
         }
       }
   

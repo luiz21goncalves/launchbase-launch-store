@@ -9,7 +9,9 @@ module.exports = {
       const products = results.rows;
 
       if(!products)
-        return  res.send('Não foram encontrados produtos.');
+        return  res.render( 'home/index.njk',{
+          error: 'Não foram encontrados produtos.'
+        });
 
       async function getImage(productId) {
         let results = await Product.files(productId);

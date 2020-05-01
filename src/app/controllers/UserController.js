@@ -5,9 +5,13 @@ module.exports = {
     return res.render('user/register');
   },
 
+  show(req, res) {
+    return res.send('Usuário cadastrado.')
+  },
+
   async register(req, res) {
-    return res.render('user/register.njk', {
-      error: "Usuário cadastrado com sucesso!"
-    })
+    const userId = await User.create(req.body);
+
+    return res.redirect('/users')
   },
 };

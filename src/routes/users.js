@@ -7,7 +7,9 @@ const UserController = require('../app/controllers/UserController');
 const UserValidator = require('../app/validators/user');
 const SessionValidator = require('../app/validators/session');
 
-routes.get('/login', SessionController.loginForm);
+const { isLoggedRedirectToUsers } = require('../app/middlewares/session');
+
+routes.get('/login', isLoggedRedirectToUsers, SessionController.loginForm);
 routes.post('/login', SessionValidator.login, SessionController.login);
 routes.post('/logout', SessionController.logout);
 

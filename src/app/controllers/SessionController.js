@@ -58,10 +58,28 @@ module.exports = {
       });
     } catch(err) {
       console.error('SessionControler forgot', err);
-      
+
       return res.render('session/forgot-password', {
         error: 'Ocorreu um erro, tente novamente!'
       });
+    }
+  },
+
+  resetForm(req, res) {
+    return res.render('session/password-reset', { token: req.query.token });
+  },
+
+  async reset(req, res) {
+    const { email, password, passwordRepeat, token } = req.body;
+
+    try {
+      
+    } catch (err) {
+      console.error('SessionControler reset', err);
+
+      return res.render('session/password-reset', {
+        error: 'Ocorreu um erro, tente novamente!'
+      })
     }
   }
 }

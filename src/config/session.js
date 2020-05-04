@@ -8,7 +8,7 @@ module.exports = session({
   }),
   secret: 'naotemsenha',
   resave: false,
-  saveuninitialized: false,
+  saveUninitialized: false,
   cookie: {
     maxAge: 1 * 24 * 60 * 60 * 1000
   }

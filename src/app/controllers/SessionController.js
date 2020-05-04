@@ -1,3 +1,7 @@
+const User = require('../models/User');
+
+const crypto = require('crypto');
+
 module.exports = {
   loginForm(req, res) {
     return res.render('session/login');
@@ -19,7 +23,17 @@ module.exports = {
     return res.render('session/forgot-password');
   },
 
-  forgot(req, res) {
-    return
+  async forgot(req, res) {
+    const user = req.user;
+    
+    const token = crypto.randomBytes(20).toString('hex');
+
+    let now = new Date();
+    now = now.setHours(now.getHours() + 1);
+
+    await User.update(user.id, {
+      reset_token: token,
+      reset_token_expires: now,
+    })
   }
 }

@@ -34,6 +34,10 @@ module.exports = {
       return res.render('home/index.njk', { products: lastAdded });
     } catch (err) {
       console.error('HomeController index', err);
+
+      return  res.render( 'home/index.njk',{
+        error: 'Error inesperado, tente novamente.'
+      });
     }
   }
 };

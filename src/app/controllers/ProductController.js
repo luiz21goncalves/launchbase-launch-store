@@ -13,6 +13,11 @@ module.exports = {
       return res.render('products/create.njk', { categories });
     } catch (err) {
       console.error('ProductController create', err);
+
+      return res.render('products/create.njk', { 
+        categories,
+        error: 'Erro inesperado, tente novamente!'
+      });
     }
   },
 
@@ -23,6 +28,7 @@ module.exports = {
       for (key of keys) {
         if (req.body[key] == '') {
           return res.render('products/create.njk', {
+            product: req.body,
             error: 'Por favor, preencha todos os campos.'
           });
         }
@@ -30,6 +36,7 @@ module.exports = {
 
       if(req.files.length == 0) 
         return res.render('products/create.njk', {
+          product: req.body,
           error: 'Por favor, envie pelo menos uma imagem.'
         });
       
@@ -46,6 +53,11 @@ module.exports = {
       return res.redirect(`/products/${productId}/edit`);
     } catch (err) {
       console.error('ProductController post', err);
+
+      return res.render('products/create.njk', {
+        product: req.body,
+        error: 'Erro inesperado, tente novamente!'
+      });
     }
   },
 
@@ -77,11 +89,17 @@ module.exports = {
       return res.render('products/show.njk', { product, files })
     } catch (err) {
       console.error('ProductController show', err);
+
+      return res.render('home/index', {
+        error: 'Erro inesperado, tente novamente!';
+      })
     }
   },
 
   async edit(req, res) {
     try {
+      const productId = req.params.id;
+      
       let results = await Product.find(req.params.id);
       const product = results.rows[0];
   
@@ -95,7 +113,7 @@ module.exports = {
       results = await Category.all();
       const categories = results.rows;
   
-      results = await Product.files(product.id);
+      results = await Product.files(productId);
       let files = results.rows;
       files = files.map(file => ({
         ...file,
@@ -105,6 +123,10 @@ module.exports = {
       return res.render('products/edit.njk', { product, categories, files });
     } catch (err) {
       console.error('ProductController edit', err);
+
+      return res.render('home/index', {
+        error: 'Erro inesperado, tente novamente!'
+      });
     }
   },
 
@@ -115,6 +137,7 @@ module.exports = {
       for (key of keys) {
         if (req.body[key] == '' && key != 'removed_files') {
           return res.render('products/edit', {
+            product: req.body,
             error: 'Por favor, preencha todos os campos.'
           });
         }
@@ -148,6 +171,11 @@ module.exports = {
       return res.redirect(`/products/${req.body.id}`);
     } catch (err) {
       console.error('ProductController put', err);
+
+      return res.render('products/edit', {
+        product: req.body,
+        error: 'Erro inesperado, tente novamente!'
+      });
     }
   },
 
@@ -158,6 +186,11 @@ module.exports = {
       return res.redirect('products/create');
     } catch (err) {
       console.error('ProductController delete', err);
+
+      return res.render('products/edit', {
+        product: req.body,
+        error: 'Erro inesperado, tente novamente!'
+      });
     }
   }
 }

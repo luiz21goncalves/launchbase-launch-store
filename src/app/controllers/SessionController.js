@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const mailer = require('../../lib/mailer');
+const { hash } = require('bcryptjs');
 
 const User = require('../models/User');
 
@@ -46,7 +47,7 @@ module.exports = {
           <h2>Perdeu a chave?</h2>
           <p>Não se preocupe, clique no link abaixo para recuperar sua senha.</p>
           <p>
-            <a href="${req.protocol}://localhost:3000/password-reset?token=${token}" target="_blank">
+            <a href="${req.protocol}://localhost:3000/users/password-reset?token=${token}" target="_blank">
               Recuperar senha.
             </a>
           </p>
@@ -70,14 +71,28 @@ module.exports = {
   },
 
   async reset(req, res) {
-    const { email, password, passwordRepeat, token } = req.body;
+    const { user } = req;
+    const { password, token } = req.body;
 
     try {
-      
+      const newPassword = await hash(password, 8);
+
+      await User.update(user.id, {
+        password: newPassword,
+        reset_token: '',
+        reset_token_expires: '',
+      });
+
+      return res.render('session/login', {
+        user: req.body,
+        seccess: 'Senha atualizada! Faça seu login.'
+      })
     } catch (err) {
       console.error('SessionControler reset', err);
 
       return res.render('session/password-reset', {
+        user: req.body,
+        token,
         error: 'Ocorreu um erro, tente novamente!'
       })
     }

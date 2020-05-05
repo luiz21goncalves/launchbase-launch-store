@@ -51,5 +51,23 @@ module.exports = {
         error: 'Ocorreu algum erro, tente novamente.'
       });
     }
-  }
+  },
+
+  async delete(req, res) {
+    try {
+      await User.delete(req.session.userId);
+      req.session.destroy();
+
+      return res.render('session/login', {
+        success: 'Conta deletada com sucesso!'
+      })
+    } catch(err) {
+      console.error('UserController delete', err);
+
+      return res.render('user/index', {
+        user: req.body,
+        error: 'Erro ao tentar deletar sua conta.'
+      })
+    }
+  },
 };

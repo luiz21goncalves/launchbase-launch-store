@@ -57,6 +57,10 @@ module.exports = {
       return res.render('search/index.njk', { products, search, categories });
     } catch (err) {
       console.error('SearchController index', err);
+
+      return res.render('home/index', {
+        error: 'Erro inesperado, tente novamente'
+      })
     }
   }
 };

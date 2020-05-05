@@ -91,7 +91,7 @@ module.exports = {
       console.error('ProductController show', err);
 
       return res.render('home/index', {
-        error: 'Erro inesperado, tente novamente!';
+        error: 'Erro inesperado, tente novamente!'
       })
     }
   },

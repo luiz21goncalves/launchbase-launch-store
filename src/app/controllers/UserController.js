@@ -55,7 +55,7 @@ module.exports = {
 
   async delete(req, res) {
     try {
-      await User.delete(req.session.userId);
+      await User.delete(req.body.id);
       req.session.destroy();
 
       return res.render('session/login', {

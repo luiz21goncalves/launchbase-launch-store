@@ -1,55 +1,70 @@
-DROP DATABASE IF EXISTS launchstoredb;
-CREATE DATABASE launchstoredb;
+DROP DATABASE IF EXISTS foodfy;
+CREATE DATABASE foodfy;
 
-CREATE TABLE "products" (
-  "id" SERIAL PRIMARY KEY,
-  "category_id" int NOT NULL,
-  "user_id" int NOT NULL,
+CREATE TABLE "files" (
+  "id" serial PRIMARY KEY,
   "name" text NOT NULL,
-  "description" text NOT NULL,
-  "old_price" int,
-  "price" int NOT NULL,
-  "quantity" int DEFAULT 0,
-  "status" int DEFAULT 1,
+  "path" text NOT NULL
+);
+
+CREATE TABLE "recipe_files" (
+  "id" serial PRIMARY KEY,
+  "recipe_id" integer,
+  "file_id" integer NOT NULL
+);
+
+CREATE TABLE "chefs" (
+  "id" serial PRIMARY KEY,
+  "name" text NOT NULL,
+  "file_id" integer NOT NULL,
+  "created_at" timestamp DEFAULT (now()),
+  "updated_at" timestamp DEFAULT (now())
+);
+
+CREATE TABLE "recipes" (
+  "id" serial PRIMARY KEY,
+  "chef_id" integer NOT NULL,
+  "user_id" integer NOT NULL,
+  "title" text NOT NULL,
+  "ingredients" text[] NOT NULL,
+  "preparation" text[] NOT NULL,
+  "information" text,
   "created_at" timestamp DEFAULT (now()),
   "updated_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "users" (
-  "id" SERIAL PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" text NOT NULL,
-  "email" text UNIQUE NOT NULL,
+  "email" text NOT NULL,
   "password" text NOT NULL,
-  "cpf_cnpj" text UNIQUE NOT NULL,
-  "cep" text,
-  "address" text,
   "reset_token" text,
   "reset_token_expires" text,
+  "is_admin" boolean DEFAULT false,
   "created_at" timestamp DEFAULT (now()),
   "updated_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "categories" (
-  "id" SERIAL PRIMARY KEY,
-  "name" text NOT NULL
-);
+INSERT INTO users(name, email, password, is_admin) VALUES('admin', 'admin@foodfy.com', '1234', 'true');
 
-INSERT INTO categories(name) VALUES('comida');
-INSERT INTO categories(name) VALUES('eletrônicos');
-INSERT INTO categories(name) VALUES('automóveis');
+CREATE TABLE "session" (
+  "sid" varchar NOT NULL COLLATE "default",
+  "sess" json NOT NULL,
+  "expire" timestamp(6) NOT NULL
+)
+WITH (OIDS=FALSE);
 
-CREATE TABLE "files" (
-  "id" SERIAL PRIMARY KEY,
-  "name" text,
-  "path" text NOT NULL,
-  "product_id" int
-);
+ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "products" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
+ALTER TABLE "chefs" ADD FOREIGN KEY ("file_id") REFERENCES "files" ("id");
 
-ALTER TABLE "files" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id") ON DELETE CASCADE;
+ALTER TABLE "recipes" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "products" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE;
+ALTER TABLE "recipes" ADD FOREIGN KEY ("chef_id") REFERENCES "chefs" ("id");
+
+ALTER TABLE "recipe_files" ADD FOREIGN KEY ("recipe_id") REFERENCES "recipes" ("id");
+
+ALTER TABLE "recipe_files" ADD FOREIGN KEY ("file_id") REFERENCES "files" ("id");
 
 CREATE FUNCTION trigger_set_timestamp()
 RETURNS TRIGGER AS $$
@@ -60,7 +75,12 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER set_timestamp
-BEFORE UPDATE ON products
+BEFORE UPDATE ON recipes
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON chefs
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
@@ -68,15 +88,3 @@ CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
-
-
-CREATE TABLE "session" (
-  "sid" varchar NOT NULL COLLATE "default",
-	"sess" json NOT NULL,
-	"expire" timestamp(6) NOT NULL
-)
-WITH (OIDS=FALSE);
-
-ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
-CREATE INDEX "IDX_session_expire" ON "session" ("expire");

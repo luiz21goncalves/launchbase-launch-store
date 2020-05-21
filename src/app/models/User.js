@@ -13,7 +13,7 @@ module.exports = {
 
       Object.keys(filters[key]).map(field => {
         query = `${query} ${field} = '${filters[key][field]}'`;
-      })
+      });
     });
 
     const results = await db.query(query);

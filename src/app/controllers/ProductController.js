@@ -1,20 +1,19 @@
-const { formatPrice, date } = require('../../lib/utils');
-
 const Category = require('../models/Category');
 const Product = require('../models/Product');
 const File = require('../models/File');
 
+const { formatPrice, date } = require('../../lib/utils');
+
 module.exports = {
   async create(req, res) {
     try {
-      const results = await Category.all();
-      const categories = results.rows;
+      const categories = await Category.findAll();
   
-      return res.render('products/create.njk', { categories });
+      return res.render('products/create', { categories });
     } catch (err) {
-      console.error('ProductController create', err);
+      console.error(err);
 
-      return res.render('products/create.njk', { 
+      return res.render('products/create', { 
         categories,
         error: 'Erro inesperado, tente novamente!'
       });
@@ -27,7 +26,7 @@ module.exports = {
 
       for (key of keys) {
         if (req.body[key] == '') {
-          return res.render('products/create.njk', {
+          return res.render('products/create', {
             product: req.body,
             error: 'Por favor, preencha todos os campos.'
           });
@@ -35,26 +34,43 @@ module.exports = {
       }
 
       if(req.files.length == 0) 
-        return res.render('products/create.njk', {
+        return res.render('products/create', {
           product: req.body,
           error: 'Por favor, envie pelo menos uma imagem.'
         });
       
-      req.body.user_id = req.session.userId;
-      let results = await Product.create(req.body);
-      const productId = results.rows[0].id;
+      let {
+        category_id,
+        name,
+        description,
+        old_price,
+        price,
+        quantity,
+        status
+      } = req.body;
 
-      const filesPromise = req.files.map(file => File.create({
-        ...file,
-        product_id: productId
-      }));
+      price = price.replace(/\D/g, '');
+
+      const product_id = await Product.create({
+        category_id,
+        user_id: req.session.userId,
+        name,
+        description,
+        old_price: old_price || price,
+        price,
+        quantity,
+        status: status || 1,
+      });
+
+      const filesPromise = req.files.map(file => 
+        File.create({ ...file, product_id }));
       await Promise.all(filesPromise);
 
       return res.redirect(`/products/${productId}/edit`);
     } catch (err) {
       console.error('ProductController post', err);
 
-      return res.render('products/create.njk', {
+      return res.render('products/create', {
         product: req.body,
         error: 'Erro inesperado, tente novamente!'
       });
@@ -63,10 +79,9 @@ module.exports = {
 
   async show(req, res) {
     try {
-      let results = await Product.find(req.params.id);
-      const product = results.rows[0];
+      const product = await Product.find(req.params.id);
   
-      if(!product) return res.render('home/index.njk', {
+      if(!product) return res.render('home/index', {
         error: 'Produto não encontrado.'
       });
   
@@ -80,13 +95,13 @@ module.exports = {
       product.oldPrice = formatPrice(product.old_price);
       product.price = formatPrice(product.price);
   
-      results = await Product.files(product.id);
-      const files = results.rows.map(file => ({
+      let files = await Product.files(product.id);
+      files = files.map(file => ({
         ...file,
         src: `${req.protocol}://${req.headers.host}${file.path.replace('public', '')}`
-      }))
+      }));
   
-      return res.render('products/show.njk', { product, files })
+      return res.render('products/show', { product, files })
     } catch (err) {
       console.error('ProductController show', err);
 
@@ -98,29 +113,24 @@ module.exports = {
 
   async edit(req, res) {
     try {
-      const productId = req.params.id;
-      
-      let results = await Product.find(req.params.id);
-      const product = results.rows[0];
+      const product = await Product.find(req.params.id);
   
-      if(!product) return res.render('home/index.njk', {
+      if(!product) return res.render('home/index', {
         error: 'Produto não encontrado.'
       });
   
       product.price = formatPrice(product.price);
       product.old_price = formatPrice(product.old_price);
   
-      results = await Category.all();
-      const categories = results.rows;
+      const categories = await Category.findAll();
   
-      results = await Product.files(productId);
-      let files = results.rows;
+      let files = await Product.files(req.params.id);
       files = files.map(file => ({
         ...file,
         src: `${req.protocol}://${req.headers.host}${file.path.replace('public', '')}`
       }));
   
-      return res.render('products/edit.njk', { product, categories, files });
+      return res.render('products/edit', { product, categories, files });
     } catch (err) {
       console.error('ProductController edit', err);
 
@@ -165,8 +175,26 @@ module.exports = {
   
         req.body.old_price = oldPrice.rows[0].price;
       }
+
+      const {
+        category_id,
+        name,
+        description,
+        old_price,
+        price,
+        quantity,
+        status,
+      } = req.body;
   
-      await Product.update(req.body);
+      await Product.update(req.body.id, {
+        category_id,
+        name,
+        description,
+        old_price,
+        price,
+        quantity,
+        status,
+      });
   
       return res.redirect(`/products/${req.body.id}`);
     } catch (err) {

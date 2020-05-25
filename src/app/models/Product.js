@@ -1,21 +1,22 @@
 const Base = require('./Base');
+const db = require('../../config/db');
 
 Base.init({ table: 'products' });
 
-const Product = {
+module.exports = {
   ...Base,
 
-  files(id) {
+  async files(id) {
     try {
-      return db.query(`
-        SELECT * FROM files WHERE product_id = $1
-      `, [id]);
+      const results = await db.query(`SELECT * FROM files WHERE product_id = $1`, [id]);
+      
+      return results.rows;
     } catch (err) {
       console.error('Products files', err);
     }
   },
 
-  search(params) {
+  async search(params) {
     try {
       const { filter, category } = params;
 
@@ -44,14 +45,14 @@ const Product = {
         GROUP BY products.id, categories.name
       `;
 
-      return db.query(query);
+      const results = await db.query(query);
+      
+      return results.rows;
     } catch (err) {
       console.error( 'Products search', err);
     }
   }
 };
-
-module.exports = { Product };
 
 //   all() {
 //     try {

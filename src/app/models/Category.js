@@ -1,13 +1,7 @@
-const db = require('../../config/db');
+const Base = require('./Base');
 
-module.exports = {
-  all() {
-    try {
-      return db.query(`
-        SELECT * FROM categories
-      `);
-    } catch (err) {
-      console.error('Category all', err);
-    }
-  }
-}
+Base.init({ table: 'categorires' });
+
+const Category = { ...Base };
+
+module.exports = Category;

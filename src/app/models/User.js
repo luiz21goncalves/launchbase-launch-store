@@ -1,88 +1,53 @@
-const db = require('../../config/db');
-const { hash } = require('bcryptjs');
-const fs = require('fs');
+const Base = require('./Base');
 
-const Product = require('./Product');
+Base.init({ table: 'users' });
 
-module.exports = {
-  async findOne(filters) {
-    let query = `SELECT * FROM users`;
+const User = {
+  ...Base,
+};
 
-    Object.keys(filters).map(key => {
-      query = `${query} ${key}`;
+module.exports = { User };
 
-      Object.keys(filters[key]).map(field => {
-        query = `${query} ${field} = '${filters[key][field]}'`;
-      });
-    });
+  // async create(data) {
+  //   const query = `
+  //     INSERT INTO users (
+  //       name,
+  //       email,
+  //       password,
+  //       cpf_cnpj,
+  //       cep,
+  //       address
+  //     ) VALUES ($1, $2, $3, $4, $5, $6)
+  //     RETURNING id
+  //   `;
 
-    const results = await db.query(query);
+  //   const passwordHash = await hash(data.password, 8);
 
-    return results.rows[0];
-  },
+  //   const values = [
+  //     data.name,
+  //     data.email,
+  //     passwordHash,
+  //     data.cpf_cnpj.replace(/\D/g, ''),
+  //     data.cep.replace(/\D/g, ''),
+  //     data.address,
+  //   ]
 
-  async create(data) {
-    const query = `
-      INSERT INTO users (
-        name,
-        email,
-        password,
-        cpf_cnpj,
-        cep,
-        address
-      ) VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id
-    `;
+  //   const results = await db.query(query, values);
 
-    const passwordHash = await hash(data.password, 8);
+  //   return results.rows[0].id;
+  // },
 
-    const values = [
-      data.name,
-      data.email,
-      passwordHash,
-      data.cpf_cnpj.replace(/\D/g, ''),
-      data.cep.replace(/\D/g, ''),
-      data.address,
-    ]
+  
 
-    const results = await db.query(query, values);
+  // async delete(id) {
+  //   let results = await db.query('SELECT * FROM products WHERE user_id = $1', [id]);
+  //   const products = results.rows;
 
-    return results.rows[0].id;
-  },
+  //   const allFilesPromise = products.map(product => Product.files(product.id));
 
-  async update(id, fields) {
-    let query = `UPDATE users SET`;
+  //   let promiseResults = await Promise.all(allFilesPromise);
 
-    Object.keys(fields).map((key, index, array) => {
-      if ((index + 1) < array.length){
-        query = `
-          ${query}
-          ${key} = '${fields[key]}',
-        `;
-      } else {
-        query = `
-          ${query}
-          ${key} = '${fields[key]}'
-          WHERE id = ${id}
-        `;
-      }
-    });
+  //   await db.query('DELETE FROM users WHERE id = $1', [id]);
 
-    await db.query(query);
-
-    return
-  },
-
-  async delete(id) {
-    let results = await db.query('SELECT * FROM products WHERE user_id = $1', [id]);
-    const products = results.rows;
-
-    const allFilesPromise = products.map(product => Product.files(product.id));
-
-    let promiseResults = await Promise.all(allFilesPromise);
-
-    await db.query('DELETE FROM users WHERE id = $1', [id]);
-
-    promiseResults.map(result => result.rows.map(file => fs.unlinkSync(file.path)));
-  }
-}
+  //   promiseResults.map(result => result.rows.map(file => fs.unlinkSync(file.path)));
+  // }

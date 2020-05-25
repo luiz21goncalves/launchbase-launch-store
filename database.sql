@@ -1,72 +1,60 @@
-DROP DATABASE IF EXISTS foodfy;
-CREATE DATABASE foodfy;
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 
-CREATE TABLE "files" (
-  "id" serial PRIMARY KEY,
+DROP DATABASE IF EXISTS launchstoredb;
+CREATE DATABASE launchstoredb;
+
+CREATE TABLE "products" (
+  "id" SERIAL PRIMARY KEY,
+  "category_id" int NOT NULL,
+  "user_id" int NOT NULL,	
   "name" text NOT NULL,
-  "path" text NOT NULL
-);
-
-CREATE TABLE "recipe_files" (
-  "id" serial PRIMARY KEY,
-  "recipe_id" integer,
-  "file_id" integer NOT NULL
-);
-
-CREATE TABLE "chefs" (
-  "id" serial PRIMARY KEY,
-  "name" text NOT NULL,
-  "file_id" integer NOT NULL,
-  "created_at" timestamp DEFAULT (now()),
-  "updated_at" timestamp DEFAULT (now())
-);
-
-CREATE TABLE "recipes" (
-  "id" serial PRIMARY KEY,
-  "chef_id" integer NOT NULL,
-  "user_id" integer NOT NULL,
-  "title" text NOT NULL,
-  "ingredients" text[] NOT NULL,
-  "preparation" text[] NOT NULL,
-  "information" text,
+  "description" text NOT NULL,
+  "old_price" int,
+  "price" int NOT NULL,	
+  "quantity" int DEFAULT 0,
+  "status" int DEFAULT 1,
   "created_at" timestamp DEFAULT (now()),
   "updated_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "users" (
-  "id" serial PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY,
   "name" text NOT NULL,
-  "email" text NOT NULL,
+  "email" text UNIQUE NOT NULL,
   "password" text NOT NULL,
+  "cpf_cnpj" text UNIQUE NOT NULL,	
+  "cep" text,
+  "address" text,	
   "reset_token" text,
   "reset_token_expires" text,
-  "is_admin" boolean DEFAULT false,
   "created_at" timestamp DEFAULT (now()),
   "updated_at" timestamp DEFAULT (now())
 );
 
-INSERT INTO users(name, email, password, is_admin) VALUES('admin', 'admin@foodfy.com', '1234', 'true');
+CREATE TABLE "categories" (
+  "id" SERIAL PRIMARY KEY,	
+  "name" text NOT NULL	
+);
 
-CREATE TABLE "session" (
-  "sid" varchar NOT NULL COLLATE "default",
-  "sess" json NOT NULL,
-  "expire" timestamp(6) NOT NULL
-)
-WITH (OIDS=FALSE);
+INSERT INTO categories(name) VALUES('comida');
+INSERT INTO categories(name) VALUES('eletrônicos');
+INSERT INTO categories(name) VALUES('automóveis');
 
-ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+CREATE TABLE "files" (
+  "id" SERIAL PRIMARY KEY,	
+  "name" text,
+  "path" text NOT NULL,	
+  "product_id" int	
+);
 
-ALTER TABLE "chefs" ADD FOREIGN KEY ("file_id") REFERENCES "files" ("id");
+ALTER TABLE "products" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
 
-ALTER TABLE "recipes" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "files" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id") ON DELETE CASCADE;
 
-ALTER TABLE "recipes" ADD FOREIGN KEY ("chef_id") REFERENCES "chefs" ("id");
+ALTER TABLE "products" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE;
 
-ALTER TABLE "recipe_files" ADD FOREIGN KEY ("recipe_id") REFERENCES "recipes" ("id");
-
-ALTER TABLE "recipe_files" ADD FOREIGN KEY ("file_id") REFERENCES "files" ("id");
-
-CREATE FUNCTION trigger_set_timestamp()
+CREATE FUNCTION trigger_set_timestamp()	
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
@@ -75,12 +63,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER set_timestamp
-BEFORE UPDATE ON recipes
-FOR EACH ROW
-EXECUTE PROCEDURE trigger_set_timestamp();
-
-CREATE TRIGGER set_timestamp
-BEFORE UPDATE ON chefs
+BEFORE UPDATE ON products
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
@@ -88,3 +71,22 @@ CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE TABLE "session" (
+  "sid" varchar NOT NULL COLLATE "default",
+	"sess" json NOT NULL,
+	"expire" timestamp(6) NOT NULL	
+)	
+WITH (OIDS=FALSE);	
+
+ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;	
+
+CREATE INDEX "IDX_session_expire" ON "session" ("expire"); 
+
+DELETE FROM users;
+DELETE FROM products;
+DELETE FROM files;
+
+ALTER SEQUENCE users_id_seq RESTART WITH 1;
+ALTER SEQUENCE products_id_seq RESTART WITH 1;
+ALTER SEQUENCE files_id_seq RESTART WITH 1;

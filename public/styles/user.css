@@ -1,0 +1,85 @@
+/* USER REGISTER */
+.user-register {
+  max-width: 500px;
+}
+
+.user-ads {
+  max-width: 700px;
+}
+
+.user-ads .items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+
+  padding: 16px 0;
+}
+
+.user-ads .items .item {
+  display: grid;
+  grid-template-columns: 116px 1fr;
+
+  align-items: start;
+
+  color: #444;
+}
+
+.user-ads .items .item .image {
+  width: 100px;
+  height: 100px;
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  border-radius: 8px;
+  border:  1px solid #eee;
+  box-shadow: 2px 2px 4px -4px #000;
+}
+
+.user-ads .items .item .info {
+  display: flex;
+  flex-direction: column;
+  height: 100px;
+}
+
+.user-ads .items .item .info .title {
+  font-size: 18px;
+  font-weight: normal;
+  color: #4a4a4a;
+
+  margin-bottom: 4px;
+}
+
+.user-ads .items .item .info .price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #4a4a4a;
+
+  margin-bottom: 4px;
+}
+
+.user-ads .items .item .info .published {
+  font-size: 14px;
+  font-weight: 300;
+  color: #4a4a4a;
+}
+
+.user-ads .items .item .info .actions {
+  display: flex;
+
+  margin-top: auto;
+}
+
+.user-ads .items .item .info .actions a {
+  margin-right: 16px;
+
+  color: var(--primary);
+
+  transition: 400ms;
+}
+
+.user-ads .items .item .info .actions a:hover {
+  font-weight: bold;
+  text-decoration: underline;
+}

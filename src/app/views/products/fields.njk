@@ -54,8 +54,8 @@
     </div>
 
     <div id="photos-preview">
-      {% if files %}
-        {% for image in files %}
+      {% if product.files %}
+        {% for image in product.files %}
           <div class="photo" id="{{ image.id }}">
             <img src="{{ image.src }}" alt="{{ image.name }}">
             <i
@@ -80,7 +80,7 @@
     type="text" 
     name="price"
     placeholder="Preço do produto"
-    value="{{ product.price }}"
+    value="{{ product.formattedPrice }}"
     onkeydown="Mask.apply(this, 'formatBRL')"
     >
   </div>
@@ -89,7 +89,7 @@
     <input 
       type="hidden" 
       name="old_price"
-      value="{{ product.old_price }}"
+      value="{{ product.formattedOldPrice }}"
     >
   {% endif %}
 </div>

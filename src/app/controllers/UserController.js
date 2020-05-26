@@ -62,7 +62,7 @@ module.exports = {
         email,
         cpf_cnpj,
         cep,
-        address
+        address,
       });
 
       return res.render('user/index', {
@@ -74,6 +74,7 @@ module.exports = {
       console.log('UserController update', err);
 
       return res.render('user/index', {
+        user: req.body,
         error: 'Ocorreu algum erro, tente novamente.'
       });
     }
@@ -82,9 +83,6 @@ module.exports = {
   async delete(req, res) {
     try {
       const products = await Product.findAll({ where: { user_id: req.body.id } });
-
-      let results = await db.query('SELECT * FROM products WHERE user_id = $1', [id]);
-      const products = results.rows;
   
       const allFilesPromise = products.map(product => Product.files(product.id));
   
@@ -93,7 +91,7 @@ module.exports = {
       await User.delete(req.body.id);
       req.session.destroy();
   
-      promiseResults.map(result => result.rows.map(file => unlinkSync(file.path)));
+      promiseResults.map(files => files.map(file => unlinkSync(file.path)));
 
       return res.render('session/login', {
         success: 'Conta deletada com sucesso!'

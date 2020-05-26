@@ -26,9 +26,7 @@ async function createUsers() {
   }
 
   const usersPromise = users.map(user => User.create(user));
-  usersIds = await Promise.all(usersPromise);
-
-  console.log('create users');
+  usersIds = await Promise.all(usersPromise)
 };
 
 async function createProducts() {
@@ -50,8 +48,6 @@ async function createProducts() {
   const productsPromise = products.map(product => Product.create(product));
   productsIds = await Promise.all(productsPromise);
 
-  console.log('create products');
-
   let files = [];
 
   while (files.length < 50) {
@@ -64,15 +60,11 @@ async function createProducts() {
 
   const filesPromise = files.map(file => File.create(file));
   await Promise.all(filesPromise);
-
-  console.log('create files');
 };
 
-async function  init() {
+async function init() {
   await createUsers();
   await createProducts();
-
-  console.log('filled Database');
 };
 
 init()

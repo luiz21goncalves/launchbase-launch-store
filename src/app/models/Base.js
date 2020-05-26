@@ -72,13 +72,13 @@ const Base = {
       let update = [];
 
       Object.keys(fields).map(key => {
-        const line = `${key} = '${fields[key]}`;
+        const line = `${key} = '${fields[key]}'`;
         update.push(line);
       });
   
       let query = `UPDATE ${this.table} SET
         ${update.join(',')} WHERE id = ${id}`;
-
+      
       return db.query(query);
     } catch (err) {
       console.error(err);

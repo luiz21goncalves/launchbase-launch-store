@@ -252,4 +252,19 @@ const Validate = {
       value
     }
   },
+  allFields(event) {
+    const items = document.querySelectorAll('.item input, .item select, .item textarea');
+
+    for (item of items) {
+      if (item.value == '' && item.name == 'removed_files') {
+        const message = document.createElement('div');
+        message.classList.add('messages');
+        message.classList.add('error');
+        message.innerText = 'Por favor, preencha todos os campos.'
+        document.querySelector('body').append(message);
+
+        event.preventDefault()
+      }
+    }
+  },
 };

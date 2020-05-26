@@ -5,16 +5,18 @@
 <section class="container form">
 
   <form action="/products?_method=PUT" method="POST" enctype="multipart/form-data">
-   <div class="header">
-    <h3>Editar Produto</h3>
-   </div>
+    <div class="header">
+      <h3>Editar Produto</h3>
+    </div>
 
-   <div class="fildes">
-    {% include "products/fields.njk" %}
-    <input type="hidden" name="id" value="{{ product.id }}">
-   </div>
+    <div class="fildes">
+      {% include "products/fields.njk" %}
+      <input type="hidden" name="id" value="{{ product.id }}">
+    </div>
 
-   <button class="button edit" type="submit">Atualizar</button>
+    <button class="button edit" type="submit">
+      Atualizar
+    </button>
   </form>
 
   <form id="form-delete" action="/products?_method=DELETE" method="post">

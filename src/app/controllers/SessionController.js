@@ -1,8 +1,9 @@
+const crypto = require('crypto');
+const { hash } = require('bcryptjs');
+
 const User = require('../models/User');
 
-const crypto = require('crypto');
 const mailer = require('../../lib/mailer');
-const { hash } = require('bcryptjs');
 
 module.exports = {
   loginForm(req, res) {
@@ -31,7 +32,7 @@ module.exports = {
     try {
       const token = crypto.randomBytes(20).toString('hex');
 
-      const now = new Date();
+      let now = new Date();
       now = now.setHours(now.getHours() + 1);
 
       await User.update(user.id, {

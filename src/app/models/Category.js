@@ -1,5 +1,5 @@
 const Base = require('./Base');
 
-Base.init({ table: 'categorires' });
+Base.init({ table: 'categories' });
 
 module.exports = { ...Base };

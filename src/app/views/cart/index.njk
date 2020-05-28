@@ -5,10 +5,10 @@
 
   {% call card.render("Carrinho", "cart container") %}
 
-    <div class="herder">
+    <div class="header">
       <p>Produto</p>
       <p>Preço</p>
-      <p>Quantidade</p>
+      <p>Qtd.</p>
     </div>
 
     <div class="items">
@@ -17,7 +17,7 @@
 
         <div class="item">
           <a href="/products/{{ item.product.id }}">
-            <img src="{{ item.product.src }}" alt="Imagem do produto {{ item.product.name }}">
+            <img src="{{ item.product.img }}" alt="Imagem do produto {{ item.product.name }}">
             <span class="title">{{ item.product.name }}</span>
           </a>
 

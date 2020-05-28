@@ -52,7 +52,6 @@ const Base = {
       Object.keys(fields).map(key => {
         keys.push(key);
         values.push(`'${fields[key]}'`);
-
       });
 
       const query = `INSERT INTO ${this.table} (${keys.join(',')})
@@ -76,7 +75,7 @@ const Base = {
         update.push(line);
       });
   
-      let query = `UPDATE ${this.table} SET
+      const query = `UPDATE ${this.table} SET
         ${update.join(',')} WHERE id = ${id}`;
       
       return db.query(query);

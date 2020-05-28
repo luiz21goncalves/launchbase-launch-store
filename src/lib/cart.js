@@ -16,6 +16,7 @@ const Cart = {
 
     return this;
   },
+  
   addOne(product) {
     let inCart = this.getCartItem(product.id);
 

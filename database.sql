@@ -48,11 +48,30 @@ CREATE TABLE "files" (
   "product_id" int	
 );
 
+CREATE TABLE "orders" (
+  "id" SERIAL PRIMARY KEY,
+  "seller_id" INT NOT NULL,
+  "bayer_id" INT NOT NULL,
+  "product_id" INT NOT NULL,
+  "price" INT NOT NULL,
+  "quantity" INT DEFAULT 0,
+  "total" INT NOT NULL,
+  "status" TEXT NOT NULL,
+  "created_at" TIMESTAMP DEFAULT (now()),
+  "updated_at" TIMESTAMP DEFAULT (now())
+);
+
 ALTER TABLE "products" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
 
 ALTER TABLE "files" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id") ON DELETE CASCADE;
 
 ALTER TABLE "products" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE;
+
+ALTER TABLE "orders" ADD FOREIGN KEY ("seller_id") REFERENCES "users" ("id");
+
+ALTER TABLE "orders" ADD FOREIGN KEY ("bayer_id") REFERENCES "users" ("id");
+
+ALTER TABLE "orders" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
 
 CREATE FUNCTION trigger_set_timestamp()	
 RETURNS TRIGGER AS $$
@@ -72,6 +91,11 @@ BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON orders
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
 CREATE TABLE "session" (
   "sid" varchar NOT NULL COLLATE "default",
 	"sess" json NOT NULL,
@@ -81,7 +105,7 @@ WITH (OIDS=FALSE);
 
 ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;	
 
-CREATE INDEX "IDX_session_expire" ON "session" ("expire"); 
+CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 
 DELETE FROM users;
 DELETE FROM products;

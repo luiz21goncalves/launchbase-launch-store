@@ -5,6 +5,9 @@ const OrderController = require('../app/controllers/OrderController');
 
 const { onlyUsers } = require('../app/middlewares/session');
 
-routes.post('/', onlyUsers, OrderController.post);
+routes.use(onlyUsers);
+
+routes.get('/', OrderController.index);
+routes.post('/', OrderController.post);
 
 module.exports = routes;

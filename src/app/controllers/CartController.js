@@ -3,12 +3,12 @@ const Cart = require('../../lib/cart');
 const LoadProductService = require('../services/LoadProductService');
 
 module.exports = {
-  async index(req, res) {
+  index(req, res) {
     try {
       let { cart } = req.session;
 
       cart = Cart.init(cart);
-
+      console.log(cart)
       return res.render('cart/index', { cart });
     } catch (err) {
       console.error(err);
@@ -32,7 +32,7 @@ module.exports = {
     }
   },
 
-  async removeOne(req, res) {
+  removeOne(req, res) {
     try {
       const { id } = req.params;
 
@@ -48,6 +48,25 @@ module.exports = {
       return res.redirect('/cart');
     } catch (err) {
       console.log(err);
+    }
+  },
+
+  delete(req, res) {
+    try {
+      const { id } = req.params;
+
+      let { cart } = req.session;
+
+      if (!cart)
+        return res.redirect('/cart');
+
+      cart = Cart.init(cart).delete(id);
+
+      req.session.cart = cart;
+
+      return res.redirect('/cart');
+    } catch (err) {
+      console.error(err);
     }
   },
 };

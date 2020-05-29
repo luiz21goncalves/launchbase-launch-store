@@ -52,7 +52,7 @@ const Cart = {
       return this;
 
     inCart.quantity--;
-    inCart.price = inCart.product.price * inCart.quantity;
+    inCart.price -= inCart.product.price;
     inCart.formattedPrice = formatPrice(inCart.price);
 
     this.total.quantity--;
@@ -76,7 +76,7 @@ const Cart = {
     
     if (this.items.length > 0) {
       this.total.quantity -= inCart.quantity;
-      this.total.price -= (inCart.product.price * inCart.product.quantity);
+      this.total.price -= (inCart.product.price * inCart.quantity);
       this.total.formattedPrice = formatPrice(this.total.price);
     }
 

@@ -3,65 +3,78 @@
 
 {% block content %}
 
-  {% call card.render("Carrinho", "cart container") %}
+  {% if (cart.items) and (cart.items.length < 1) %}
 
-    <div class="header">
-      <p>Produto</p>
-      <p>Preço</p>
-      <p>Qtd.</p>
-    </div>
+    {% call card.render("", "cart-empty container") %}
+      <p>Seu carrinho está vazio</p>
+      <a href="/products/search" class="button">Compre agora</a>
+    {% endcall %}
 
-    <div class="items">
+  {% else %}
 
-      {% for item in cart.items %}
+    {% call card.render("Carrinho", "cart container") %}
 
-        <div class="item">
-          <a href="/products/{{ item.product.id }}">
-            <img src="{{ item.product.img }}" alt="Imagem do produto {{ item.product.name }}">
-            <span class="title">{{ item.product.name }}</span>
-          </a>
+      <div class="header">
+        <p>Produto</p>
+        <p>Preço</p>
+        <p>Qtd.</p>
+      </div>
 
-          <span class="price">{{ item.formattedPrice }}</span>
+      <div class="items">
 
-          <div class="quantity-controll">
-            <form action="/cart/{{ item.product.id }}/remove-one" method="post">
-              <button class="remove">
-                <i class="material-icons">remove_circle_outline</i>
-              </button>
-            </form>
+        {% for item in cart.items %}
 
-            <span class="quantity">{{ item.quantity }}</span>
+          <div class="item">
+            <a href="/products/{{ item.product.id }}">
+              <img src="{{ item.product.img }}" alt="Imagem do produto {{ item.product.name }}">
+              <span class="title">{{ item.product.name }}</span>
+            </a>
 
-            <form action="/cart/{{ item.product.id }}/add-one" method="post">
-              <button class="add">
-                <i class="material-icons">add_circle_outline</i>
+            <span class="price">{{ item.formattedPrice }}</span>
+
+            <div class="quantity-controll">
+              <form action="/cart/{{ item.product.id }}/remove-one" method="post">
+                <button class="remove">
+                  <i class="material-icons">remove_circle_outline</i>
+                </button>
+              </form>
+
+              <span class="quantity">{{ item.quantity }}</span>
+
+              <form action="/cart/{{ item.product.id }}/add-one" method="post">
+                <button class="add">
+                  <i class="material-icons">add_circle_outline</i>
+                </button>
+              </form>
+            </div>
+
+            <form class="trash" action="/cart/{{ item.product.id }}/delete" method="post">
+              <button class="delete">
+                <i class="material-icons">delete</i>
               </button>
             </form>
           </div>
 
-          <form class="trash" action="/cart/{{ item.product.id }}/delete" method="post">
-            <button class="delete">
-              <i class="material-icons">delete</i>
-            </button>
-          </form>
-        </div>
+        {% endfor %}
 
-      {% endfor %}
+      </div>
 
-    </div>
+      <div class="total">
+        <p>Total</p>
+        <span>{{ cart.total.formattedPrice }}</span>
+      </div>
 
-    <div class="total">
-      <p>Total</p>
-      <span>{{ cart.total.formattedPrice }}</span>
-    </div>
+      <div class="actions">
+        <a href="/products/search"class="button shop">Continuar comprando</a>
+        <form action="/orders" method="post">
+          <button class="button order">Realizar Pedido</button>
+        </form>
+      </div>
 
-    <div class="actions">
-      <a href="/products/search"class="button shop">Continuar comprando</a>
-      <form action="/orders" method="post">
-        <button class="button order">Realizar Pedido</button>
-      </form>
-    </div>
+    {% endcall %}
 
-  {% endcall %}
+  {% endif %}
+
+
 
 {% endblock content %}

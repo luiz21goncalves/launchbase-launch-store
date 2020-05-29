@@ -1,7 +1,9 @@
 const LoadProductService = require('../services/LoadProductService');
 const User = require('../models/User');
+const Order = require('../models/Order');
 
 const mailer = require('../../lib/mailer');
+const Cart = require('../../lib/cart');
 
 const email = (seller, product, bayer) => `
 <h2>Olá ${seller.name}</h2>
@@ -23,25 +25,53 @@ const email = (seller, product, bayer) => `
 module.exports = {
   async post(req, res) {
     try {
-      const product = await LoadProductService.load('product', {
-        where: { id: req.body.id }
+      const cart = Cart.init(req.session.cart);
+
+      const bayer_id = req.session.userId;
+      
+      const filteredItems = cart.items.filter(item => 
+        item.product.user_id != bayer_id
+      );
+
+      const createOrderPromise = filteredItems.map(async item => {
+        let { product, price: total, quantity } = item;
+        const { price, id: product_id, user_id: seller_id } = product;
+        const status = 'open';
+
+        const order = await Order.create({
+          seller_id,
+          bayer_id,
+          product_id,
+          price,
+          quantity,
+          total,
+          status,
+        });
+
+        product = await LoadProductService.load('product', {
+          where: { id: product_id }
+        });
+  
+        const seller = await User.findOne({ where: { id: seller_id } });
+  
+        const buyer = await User.findOne({ where: { id: bayer_id } });
+  
+        await mailer.sendMail({
+          to: seller.email,
+          from: 'orders@launchstore.com.br',
+          subject: 'Novo pedido de compra',
+          html: email(seller, product, buyer),
+        });
+
+        return order;
       });
 
-      const seller = await User.findOne({ where: { id: product.user_id } });
+      await Promise.all(createOrderPromise);
 
-      const buyer = await User.findOne({ where: { id: req.session.userId } });
-
-      await mailer.sendMail({
-        to: seller.email,
-        from: 'orders@launchstore.com.br',
-        subject: 'Novo pedido de compra',
-        html: email(seller, product, buyer),
-      });
-
-      return res.render('orders/success', {});
+      return res.render('orders/success');
     } catch (err) {
       console.error(err);
-      return res.render('orders/error', {});
+      return res.render('orders/error');
     }
   },
 };

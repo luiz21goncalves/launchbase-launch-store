@@ -16,8 +16,8 @@ async function format(product) {
   const files = await getImages(product.id);
   product.img = files[0].src;
   product.files = files;
-  product.formattedOldPrice = formatPrice(product.price);
-  product.formattedPrice = formatPrice(product.old_price);
+  product.formattedOldPrice = formatPrice(product.old_price);
+  product.formattedPrice = formatPrice(product.price);
 
   const { day, hour, minutes, month } = date(product.updated_at);
   

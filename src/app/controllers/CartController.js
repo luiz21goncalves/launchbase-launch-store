@@ -8,7 +8,6 @@ module.exports = {
       let { cart } = req.session;
 
       cart = Cart.init(cart);
-      console.log(cart)
       return res.render('cart/index', { cart });
     } catch (err) {
       console.error(err);
@@ -47,7 +46,7 @@ module.exports = {
 
       return res.redirect('/cart');
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   },
 

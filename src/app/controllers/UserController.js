@@ -72,7 +72,7 @@ module.exports = {
       });
 
     } catch(err) {
-      console.log('UserController update', err);
+      console.error(err);
 
       return res.render('user/index', {
         user: req.body,

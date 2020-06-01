@@ -15,7 +15,8 @@ CREATE TABLE "products" (
   "quantity" int DEFAULT 0,
   "status" int DEFAULT 1,
   "created_at" timestamp DEFAULT (now()),
-  "updated_at" timestamp DEFAULT (now())
+  "updated_at" timestamp DEFAULT (now()),
+  "deleted_at" timestamp
 );
 
 CREATE TABLE "users" (
@@ -106,6 +107,18 @@ WITH (OIDS=FALSE);
 ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;	
 
 CREATE INDEX "IDX_session_expire" ON "session" ("expire");
+
+CREATE OR REPLACE RULE delete_product AS
+ON DELETE TO products DO INSTEAD
+UPDATE products
+SET deleted_at = now()
+WHERE products.id = old.id;
+
+CREATE VIEW products_without_deleted AS
+SELECT * FROM products WHERE deleted_at IS null;
+
+ALTER TABLE products RENAME TO products_with_deleted;
+ALTER VIEW products_without_deleted RENAME TO products;
 
 DELETE FROM users;
 DELETE FROM products;

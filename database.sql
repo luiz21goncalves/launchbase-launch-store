@@ -1,5 +1,5 @@
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
+-- DROP SCHEMA public CASCADE;
+-- CREATE SCHEMA public;
 
 DROP DATABASE IF EXISTS launchstoredb;
 CREATE DATABASE launchstoredb;
@@ -120,10 +120,10 @@ SELECT * FROM products WHERE deleted_at IS null;
 ALTER TABLE products RENAME TO products_with_deleted;
 ALTER VIEW products_without_deleted RENAME TO products;
 
-DELETE FROM users;
-DELETE FROM products;
-DELETE FROM files;
+-- DELETE FROM users;
+-- DELETE FROM products_with_deleted;
+-- DELETE FROM files;
 
-ALTER SEQUENCE users_id_seq RESTART WITH 1;
-ALTER SEQUENCE products_id_seq RESTART WITH 1;
-ALTER SEQUENCE files_id_seq RESTART WITH 1;
+-- ALTER SEQUENCE users_id_seq RESTART WITH 1;
+-- ALTER SEQUENCE products_with_deleted_id_seq RESTART WITH 1;
+-- ALTER SEQUENCE files_id_seq RESTART WITH 1;

@@ -12,7 +12,7 @@ function find(filters, table) {
       });
     });
   }
-
+  
   return db.query(query);
 };
 

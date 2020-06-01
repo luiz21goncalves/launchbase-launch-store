@@ -7,8 +7,8 @@ module.exports = {
     const year = date.getFullYear();
     const month = `0${date.getMonth() + 1}`.slice(-2);
     const day = `0${date.getDate()}`.slice(-2);
-    const hour = date.getHours();
-    const minutes = date.getMinutes();
+    const hour = `0${date.getHours()}`.slice(-2);
+    const minutes = `0${date.getMinutes()}`.slice(-2);
 
     return {
       day,

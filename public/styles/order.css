@@ -31,7 +31,7 @@
 /* MY ORDERS */
 .orders .item-container {
   display: grid;
-  grid-template-columns: 1fr auto auto 100px;
+  grid-template-columns: 1fr auto auto 100px 100px;
   gap: 32px;
 
   align-items: center;

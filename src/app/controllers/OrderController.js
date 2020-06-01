@@ -36,6 +36,19 @@ module.exports = {
     }
   },
 
+  async show(req, res) {
+    try {
+      const { id } = req.params;
+      const order = await LoadOrderService.load('order', {
+        where: { id }
+      });
+
+      return res.render('orders/details', { order });
+    } catch (err) {
+      console.log(err);
+    }
+  },
+
   async post(req, res) {
     try {
       const cart = Cart.init(req.session.cart);

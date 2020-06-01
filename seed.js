@@ -1,5 +1,6 @@
 const { hash } = require('bcryptjs');
 const faker = require('faker');
+const fs = require('fs')
 
 const User = require('./src/app/models/User');
 const Product = require('./src/app/models/Product');
@@ -50,10 +51,18 @@ async function createProducts() {
 
   let files = [];
 
+  function copy() {
+    const pathIn = fs.createReadStream('public/placeholder.png');
+    const pathOut = fs.createWriteStream(`public/images/${faker.random.number()}-placeholder.png`);
+  
+    const file = pathIn.pipe(pathOut);
+    return file.path;
+  };
+  
   while (files.length < 50) {
     files.push({
       name: faker.image.image(),
-      path: `public/images/placeholder.png`,
+      path: copy(),
       product_id: productsIds[Math.floor(Math.random() * totalProducts)],
     });
   }
@@ -67,4 +76,4 @@ async function init() {
   await createProducts();
 };
 
-init()
+init();

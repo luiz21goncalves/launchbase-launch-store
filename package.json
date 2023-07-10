@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "connect-pg-simple": "^6.1.0",
+    "connect-pg-simple": "^6.2.1",
     "express": "^4.17.3",
     "express-session": "^1.17.1",
     "intl": "^1.2.5",
@@ -19,12 +19,12 @@
     "multer": "^1.4.2",
     "nodemailer": "^6.6.1",
     "nunjucks": "^3.2.4",
-    "pg": "^7.18.2"
+    "pg": "^8.11.1"
   },
   "devDependencies": {
     "browser-sync": "^2.29.1",
     "faker": "^4.1.0",
-    "nodemon": "^2.0.20",
+    "nodemon": "^3.0.1",
     "npm-run-all": "^4.1.5"
   }
 }
